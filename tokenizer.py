@@ -58,17 +58,23 @@ def byte_pair_encoding(data, n):
         pairs = get_stats(vocab)
         best = max(pairs, key=pairs.get)
         vocab = merge_vocab(best, vocab)
-    return vocab
+
+    # Assign token IDs
+    token_to_id = {token: i for i, token in enumerate(vocab.keys(), start=4)}  
+    # Reserving 0-3 for special tokens
+    special_tokens = {"<PAD>": 0, "<UNK>": 1, "<SOS>": 2, "<EOS>": 3}
+    token_to_id.update(special_tokens)
+    return vocab, token_to_id
 
 
 if __name__ == "__main__":
     """ Load the text file, run the byte_pair_encoding algorithm, then save in pickle """
     config = load_config()
 
-    with open(config['document'], "r", encoding="utf-8") as file:
+    with open(config['tokenizer']['document'], "r", encoding="utf-8") as file:
         text = file.read()
 
-    bpe_pairs = byte_pair_encoding(text, config['numb_pair_merges'])
+    bpe_vocab, token_to_id = byte_pair_encoding(text, config['tokenizer']['numb_pair_merges'])
 
-    with open(config['tokens_location'], "wb") as f:
-        pickle.dump(bpe_pairs, f)
+    with open(config['tokenizer']['tokens_location'], "wb") as f:
+        pickle.dump({"vocab": bpe_vocab, "token_to_id": token_to_id}, f)
