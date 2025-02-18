@@ -1,0 +1,5 @@
+---
+numb_pair_merges: 10000
+document: "data/raw/bible.txt"
+tokens_location: "data/processed/bpe_vocab.pkl"
+...

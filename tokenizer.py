@@ -1,6 +1,11 @@
 import re
 from collections import defaultdict
 import pickle
+import yaml
+
+def load_config():
+    with open("config.yaml", "r") as f:
+        return yaml.safe_load(f) 
 
 def get_stats(vocab):
     """
@@ -44,6 +49,10 @@ def byte_pair_encoding(data, n):
     Given a list of strings and an integer n, returns a list of n merged pairs
     of characters found in the vocabulary of the input data.
     """
+
+    data = data.lower()
+    data = ' '.join(data.split())
+    data = re.split(r'[.?!]', data)
     vocab = get_vocab(data)
     for i in range(n):
         pairs = get_stats(vocab)
@@ -53,15 +62,13 @@ def byte_pair_encoding(data, n):
 
 
 if __name__ == "__main__":
-    # Load the text file
-    with open("data/raw/bible.txt", "r", encoding="utf-8") as file:
+    """ Load the text file, run the byte_pair_encoding algorithm, then save in pickle """
+    config = load_config()
+
+    with open(config['document'], "r", encoding="utf-8") as file:
         text = file.read()
-    text = text.lower()
-    text = ' '.join(text.split())
-    data = re.split(r'[.?!]', text)
 
-    n = 10000
-    bpe_pairs = byte_pair_encoding(data, n)
+    bpe_pairs = byte_pair_encoding(text, config['numb_pair_merges'])
 
-    with open(r"data\processed\bpe_vocab.pkl", "wb") as f:
+    with open(config['tokens_location'], "wb") as f:
         pickle.dump(bpe_pairs, f)

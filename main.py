@@ -1,6 +1,8 @@
-import numpy as np
+import pickle
+from tokenizer import load_config
 
-msg = "Roll a dice!"
-print(msg)
+config = load_config()
 
-print(np.random.randint(1,9))
+file = open(config['tokens_location'],'rb')
+tokens = pickle.load(file)
+print(tokens)
